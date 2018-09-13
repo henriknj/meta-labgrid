@@ -1,0 +1,32 @@
+From 4b086876cefd4ed3ceb509a36e3640a45945aa85 Mon Sep 17 00:00:00 2001
+From: "Jakob D. Thomsen" <jakob.dyhr@prevas.dk>
+Date: Tue, 16 Oct 2018 13:42:52 +0200
+Subject: [PATCH] labgrid: simplerest - use http PUT command to adapt to
+ powerrelay server
+
+---
+ labgrid/driver/power/simplerest.py | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/labgrid/driver/power/simplerest.py b/labgrid/driver/power/simplerest.py
+index 25ef07a..c119a80 100644
+--- a/labgrid/driver/power/simplerest.py
++++ b/labgrid/driver/power/simplerest.py
+@@ -15,11 +15,12 @@ import requests
+ def power_set(host, index, value):
+     index = int(index)
+     value = 1 if value else 0
+-    requests.get(host.format(value=value, index=index))
++    requests.put(host.format(value=value, index=index))
+ 
+ def power_get(host, index):
+     index = int(index)
+     # remove trailing /
+     r = requests.get(host.format(value='', index=index).rstrip('/'))
++    data = r.json()
+     r.raise_for_status()
+-    return r.text == '1'
++    return data['state'] == '1'
+-- 
+2.17.1
+
